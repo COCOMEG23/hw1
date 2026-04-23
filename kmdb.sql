@@ -61,10 +61,157 @@
 -- - Follow best practices for table and column names
 -- - Use correct data column types (i.e. TEXT/INTEGER)
 -- - Use of the `model_id` naming convention for foreign key columns
+
+DROP TABLE IF EXISTS movies;
+CREATE TABLE movies(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    movie_title TEXT,
+    year_released INTEGER,
+    MPAA_rating TEXT,
+    studio_id INTEGER
+);
+
+DROP TABLE IF EXISTS studios;
+CREATE TABLE studios(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    studio_name TEXT
+);
+
+DROP TABLE IF EXISTS actors;
+CREATE TABLE actors(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT,
+    last_name TEXT,
+    agent_id INTEGER
+);
+
+DROP TABLE IF EXISTS characters;
+CREATE TABLE characters(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    character_name TEXT,
+    actor_id INTEGER,
+    movie_id INTEGER
+);
+
+DROP TABLE IF EXISTS agents;
+CREATE TABLE agents(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    agent_name TEXT
+);
+
+DROP TABLE IF EXISTS roles;
+CREATE TABLE roles(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    movie_id INTEGER,
+    actor_id integer,
+    character_id integer
+);
+
+
 -- 3. Insertion of data (INSERT statements) - 4 points
 -- - Insert data into all the tables you've created.
+INSERT INTO movies(
+    movie_title,
+    year_released,
+    MPAA_rating,
+    studio_id
+)
+VALUES
+("Batman Begins","2005","PG-13","1"),
+("The Dark Knight","2008","PG-13","1"),
+( "The Dark Knight Rises","2012","PG-13","1");
+
+INSERT INTO studios(
+    studio_name
+)
+VALUES(
+    "Warner Brothers"
+);
+
+INSERT INTO actors(
+    first_name,
+    last_name,
+    agent_id)
+
+VALUES("Christian","Bale","1"),
+("Michael","Caine","2"),  
+("Liam", "Neeson","3"),
+    ("Katie", "Holmes","4"),
+    ("Gary", "Oldman","5"),
+    ("Christian", "Bale","1"),
+    ("Heath", "Ledger","2"),
+    ("Aaron", "Eckhart","3"),
+    ("Michael", "Caine","4"),
+    ("Maggie", "Gyllenhaal","5"),
+    ("Christian", "Bale","1"),
+    ("Gary", "Oldman","2"),
+    ("Tom", "Hardy","3"),
+    ("Joseph", "Gordon-Levitt","4"),
+    ("Anne", "Hathaway","5"); 
+
+INSERT INTO characters(
+    character_name
+)
+VALUES
+("Bruce Wayne"),
+    ("Alfred"),
+    ("Ra's Al Ghul"),
+    ("Rachel Dawes"),
+    ("Commissioner Gordon"),
+    ("Bruce Wayne"),
+    ("Joker"),
+    ("Harvey Dent"),
+    ("Alfred"),
+    ("Rachel Dawes"),
+    ("Bruce Wayne"),
+    ("Commissioner Gordon"),
+    ("Bane"),
+    ("John Blake"),
+    ("Selina Kyle");
+
+INSERT INTO agents (
+agent_name
+)
+VALUES
+("Starline Talent Group"),
+    ("Elite Horizon Agency"),
+    ("Premier Casting Hub"),
+    ("Summit Arts Management"),
+    ("Apex Media Partners");
+
+INSERT INTO roles (
+    movie_id,
+    actor_id,
+    character_id
+)
+
+Values
+-- Batman Begins (Movie 1)
+(1, 1, 1),   
+(1, 2, 2),   
+(1, 3, 3),   
+(1, 4, 4),   
+(1, 5, 5),   
+-- The Dark Knight (Movie 2)
+(2, 1, 1),   
+(2, 6, 6),  
+(2, 7, 7),  
+(2, 2, 2),   
+(2, 8, 4),   
+
+-- The Dark Knight Rises (Movie 3)
+(3, 1, 1),   
+(3, 5, 5),   
+(3, 9, 8),   
+(3, 10, 9),  
+(3, 11, 10);
+
 -- 4. Modification of existing data (UPDATE statements) - 2 points
 -- - Assign an agent as the representative of a single actor.
+UPDATE actors
+SET agent_id = "2"
+WHERE id = 1;
+
 -- 5. "The report" (SELECT statements) - 4 points
 -- - Write 3 `SELECT` statements to produce (a) list of movies with their studio,
 --   (b) list of cast for each movie, and (c) list of actors the "agent" (i.e. user)
@@ -107,6 +254,9 @@
 .print "Movies"
 .print "======"
 .print ""
+SELECT movie_title, year_released, MPAA_rating, studios.studio_name
+FROM movies INNER JOIN studios ON studios.id = movies.studio_id;
+
 
 -- ***TODO!***
 -- The SQL statement for the movies output goes here.
@@ -123,6 +273,12 @@
 .print "Top Cast"
 .print "========"
 .print ""
+
+SELECT movies.movie_title, actors.first_name, actors.last_name, characters.character_name
+FROM movies INNER JOIN roles ON movies.id = roles.movie_id
+INNER JOIN actors ON actors.id = roles.actor_id
+INNER JOIN characters ON roles.character_id = characters.id
+ORDER BY movies.movie_title;
 
 -- ***TODO!***
 -- The SQL statement for the cast output goes here.
@@ -148,9 +304,14 @@
 
 -- Prints a header for the agent's list of represented actors
 .print ""
-.print "Represented by agent"
+.print "Represented by agent, Elite Horizon Agency"
 .print "===================="
 .print ""
+
+SELECT actors.first_name, actors.last_name
+FROM actors INNER JOIN agents ON agents.id = actors.agent_id
+WHERE agent_id = "2";
+
 
 -- ***TODO!***
 -- The SQL statement for the represented actor(s) output goes here.
